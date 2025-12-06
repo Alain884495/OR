@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcul OR</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 0px;
+            margin: 0px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .container {
+            border: 1px solid #dcdcdc;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            background-color: white;
+            width: 90%;
+            max-width: 600px;
+            margin: 20px;
+        }
+
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            font-weight: 600;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .indice_groupe {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .div_depart,
+        .div_fin,
+        span {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-weight: 500;
+            color: #2c3e50;
+            font-size: 0.95em;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="time"],
+        input[type="number"],
+        select {
+            padding: 12px 15px;
+            border: 1px solid #dcdcdc;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+            background-color: white;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        input[type="time"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        .date-time-group {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 10px;
+        }
+
+        .resultat_calcul {
+            margin-top: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-radius: 10px;
+            display: none;
+        }
+
+        .resultat_calcul.show {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .resultat_ligne {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .resultat_ligne:last-child {
+            border-bottom: none;
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #667eea;
+            margin-top: 10px;
+            padding-top: 15px;
+            border-top: 2px solid #667eea;
+        }
+
+        .resultat_label {
+            color: #555;
+            font-weight: 500;
+        }
+
+        .resultat_valeur {
+            color: #2c3e50;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        @media (max-width: 480px) {
+            .indice_groupe {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .container {
+                padding: 20px 15px;
+                margin: 10px;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            .date-time-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Application de Calcul Ordre de Route</h2>
+        <div>
+            <form action="#" onsubmit="return false;">
+                <div class="indice_groupe">
+                    <span style="flex: 2;">
+                        <label for="indice">Indice</label>
+                        <input type="number" id="indice" placeholder="1225" oninput="calculerOR(this)" min="0" step="1">
+                    </span>
+                    <span style="flex: 1;">
+                        <label for="groupe">Groupe</label>
+                        <select name="groupe" id="groupe" onchange="calculerOR(this)">
+                            <option value="I">Groupe I</option>
+                            <option value="II">Groupe II</option>
+                        </select>
+                    </span>
+                </div>
+                
+                <div class="div_depart">
+                    <label for="date_depart">Date de départ</label>
+                    <div class="date-time-group">
+                        <input type="date" id="date_depart" onchange="calculerOR()">
+                        <input type="time" id="heure_depart" onchange="calculerOR()">
+                    </div>
+                    <div class="error-message" id="error-depart">Date invalide</div>
+                </div>
+
+                <div class="div_fin">
+                    <label for="date_fin">Date de fin</label>
+                    <div class="date-time-group">
+                        <input type="date" id="date_fin" onchange="calculerOR()">
+                        <input type="time" id="heure_fin" onchange="calculerOR()">
+                    </div>
+                    <div class="error-message" id="error-fin">Date invalide</div>
+                </div>
+            </form>
+        </div>
+        <div class="resultat_calcul" id="resultat">
+            <div class="resultat_ligne">
+                <span class="resultat_label">Durée du déplacement :</span>
+                <span class="resultat_valeur" id="duree">-</span>
+            </div>
+            <div class="resultat_ligne">
+                <span class="resultat_label">Taux journalier :</span>
+                <span class="resultat_valeur" id="taux">-</span>
+            </div>
+            <div class="resultat_ligne">
+                <span class="resultat_label">Nombre de jours :</span>
+                <span class="resultat_valeur" id="nbJours">-</span>
+            </div>
+            <div class="resultat_ligne">
+                <span class="resultat_label">Montant total :</span>
+                <span class="resultat_valeur" id="montant">-</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0];
+            const timeStr = now.toTimeString().slice(0, 5);
+            
+            document.getElementById('date_depart').value = dateStr;
+            document.getElementById('heure_depart').value = timeStr; 
+        });
+
+        function calculerOR(elementDeclencheur) {
+            const indice = document.getElementById("indice").value;
+            const dateDepart = document.getElementById("date_depart").value;
+            const heureDepart = document.getElementById("heure_depart").value;
+            const dateFin = document.getElementById("date_fin").value;
+            const heureFin = document.getElementById("heure_fin").value;
+            var groupe = document.getElementById("groupe").value;
+            const resultatDiv = document.getElementById("resultat");
+
+            if (elementDeclencheur) {
+                if (elementDeclencheur.id === "indice") {
+                    if (indice <= 800) {
+                        groupe = "II";
+                        document.getElementById("groupe").value = "II";
+                    } else {
+                        groupe = "I";
+                        document.getElementById("groupe").value = "I";
+                    }
+                } else if (elementDeclencheur.id === "groupe") {
+                    if (groupe == "I") {
+                        document.getElementById("indice").placeholder = "Indice > 800";
+                        document.getElementById("indice").value = "";
+                    } else {
+                        document.getElementById("indice").placeholder = "Indice <= 800";
+                        document.getElementById("indice").value = "";
+                    }
+                }
+            }
+
+            document.getElementById("error-depart").classList.remove("show");
+            document.getElementById("error-fin").classList.remove("show");
+
+            if (!dateDepart || !heureDepart || !dateFin || !heureFin) {
+                resultatDiv.classList.remove("show");
+                return;
+            }
+
+            const departDateTime = new Date(`${dateDepart}T${heureDepart}`);
+            const finDateTime = new Date(`${dateFin}T${heureFin}`);
+
+            if (isNaN(departDateTime.getTime()) || isNaN(finDateTime.getTime())) {
+                resultatDiv.classList.remove("show");
+                return;
+            }
+
+            if (finDateTime <= departDateTime) {
+                document.getElementById("error-fin").textContent = "La date de fin doit être après la date de départ";
+                document.getElementById("error-fin").classList.add("show");
+                resultatDiv.classList.remove("show");
+                return;
+            }
+
+            const diff = finDateTime - departDateTime;
+            const heures = diff / (1000 * 60 * 60);
+
+            if (heures < 8) {
+                document.getElementById("error-fin").textContent = "La durée doit être d'au moins 8 heures";
+                document.getElementById("error-fin").classList.add("show");
+                resultatDiv.classList.remove("show");
+                return;
+            }
+
+            const tauxJournalier = groupe === "I" ? 36000 : 30000;
+            const tauxFraction = groupe === "I" ? 12000 : 10000;
+
+            const joursComplets = Math.floor(heures / 24);
+            const heuresRestantes = heures % 24;
+            const fractions = Math.floor(heuresRestantes / 8);
+
+            const montantJours = joursComplets * tauxJournalier;
+            const montantFractions = fractions * tauxFraction;
+            const montantTotal = montantJours + montantFractions;
+
+            const heuresFinales = heuresRestantes % 8;
+            let dureeTexte = "";
+            if (joursComplets > 0) {
+                dureeTexte += `${joursComplets} jour${joursComplets > 1 ? 's' : ''}`;
+            }
+            if (fractions > 0) {
+                if (dureeTexte) dureeTexte += ", ";
+                dureeTexte += `${fractions} fraction${fractions > 1 ? 's' : ''} (${fractions * 8}h)`;
+            }
+            if (heuresFinales > 0) {
+                if (dureeTexte) dureeTexte += " et ";
+                dureeTexte += `${Math.floor(heuresFinales)}h`;
+            }
+
+            let detailCalcul = "";
+            if (joursComplets > 0) {
+                detailCalcul += `${joursComplets} jour${joursComplets > 1 ? 's' : ''} × ${tauxJournalier.toLocaleString('fr-FR')} Ar`;
+            }
+            if (fractions > 0) {
+                if (detailCalcul) detailCalcul += " + ";
+                detailCalcul += `${fractions} fraction${fractions > 1 ? 's' : ''} × ${tauxFraction.toLocaleString('fr-FR')} Ar`;
+            }
+
+            document.getElementById("duree").textContent = dureeTexte || `${Math.floor(heures)}h`;
+            document.getElementById("taux").textContent = detailCalcul;
+            document.getElementById("nbJours").textContent = `${joursComplets} jour${joursComplets > 1 ? 's' : ''} + ${fractions} fraction${fractions > 1 ? 's' : ''}`;
+            document.getElementById("montant").textContent = `${montantTotal.toLocaleString('fr-FR')} Ar`;
+
+            resultatDiv.classList.add("show");
+        }
+    </script>
+</body>
+</html>
