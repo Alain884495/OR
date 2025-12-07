@@ -100,15 +100,19 @@
 
         .resultat_calcul {
             margin-top: 25px;
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-            border-radius: 10px;
-            display: none;
+            padding: 25px;
+            background: rgb(155, 147, 147);
+            border-radius: 12px;
+            display: flex;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
 
         .resultat_calcul.show {
             display: block;
-            animation: fadeIn 0.3s ease-in;
+            animation: fadeIn 0.5s ease-in;
         }
 
         @keyframes fadeIn {
@@ -116,32 +120,77 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        .resultat_titre {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .resultat_contenu {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
         .resultat_ligne {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .resultat_ligne:last-child {
-            border-bottom: none;
-            font-weight: 600;
-            font-size: 1.1em;
-            color: #667eea;
-            margin-top: 10px;
-            padding-top: 15px;
-            border-top: 2px solid #667eea;
-        }
-
-        .resultat_label {
-            color: #555;
-            font-weight: 500;
-        }
-
-        .resultat_valeur {
+            margin: 5px 0;
             color: #2c3e50;
-            font-weight: 600;
-            text-align: right;
+        }
+
+        .resultat_ligne.separator {
+            text-align: center;
+            color: #667eea;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        .resultat_ligne.total {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .resultat_ligne.indent {
+            margin-left: 120px;
+        }
+
+        .resultat_final {
+            margin-top: 20px;
+            padding: 20px;
+            background: #55a336;
+            border-radius: 8px;
+            text-align: center;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .resultat_final_texte {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .resultat_final_montant {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            margin-top: 8px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .error-message {
@@ -173,6 +222,22 @@
             .date-time-group {
                 grid-template-columns: 1fr;
             }
+
+            .resultat_calcul {
+                font-size: 12px;
+            }
+
+            .resultat_ligne.indent {
+                margin-left: 20px;
+            }
+
+            .resultat_final {
+                margin-top: 15px;
+            }
+
+            .resultat_final_montant {
+                font-size: 22px;
+            }
         }
     </style>
 </head>
@@ -196,7 +261,7 @@
                 </div>
                 
                 <div class="div_depart">
-                    <label for="date_depart">Date de départ</label>
+                    <label for="date_depart">Date et heure de départ</label>
                     <div class="date-time-group">
                         <input type="date" id="date_depart" onchange="calculerOR()">
                         <input type="time" id="heure_depart" onchange="calculerOR()">
@@ -205,7 +270,7 @@
                 </div>
 
                 <div class="div_fin">
-                    <label for="date_fin">Date de fin</label>
+                    <label for="date_fin">Date et heure d'arrivée</label>
                     <div class="date-time-group">
                         <input type="date" id="date_fin" onchange="calculerOR()">
                         <input type="time" id="heure_fin" onchange="calculerOR()">
@@ -214,24 +279,7 @@
                 </div>
             </form>
         </div>
-        <div class="resultat_calcul" id="resultat">
-            <div class="resultat_ligne">
-                <span class="resultat_label">Durée du déplacement :</span>
-                <span class="resultat_valeur" id="duree">-</span>
-            </div>
-            <div class="resultat_ligne">
-                <span class="resultat_label">Taux journalier :</span>
-                <span class="resultat_valeur" id="taux">-</span>
-            </div>
-            <div class="resultat_ligne">
-                <span class="resultat_label">Nombre de jours :</span>
-                <span class="resultat_valeur" id="nbJours">-</span>
-            </div>
-            <div class="resultat_ligne">
-                <span class="resultat_label">Montant total :</span>
-                <span class="resultat_valeur" id="montant">-</span>
-            </div>
-        </div>
+        <div class="resultat_calcul" id="resultat"></div>
     </div>
 
     <script>
@@ -243,6 +291,19 @@
             document.getElementById('date_depart').value = dateStr;
             document.getElementById('heure_depart').value = timeStr; 
         });
+
+        function formatDate(date) {
+            const jour = String(date.getDate()).padStart(2, '0');
+            const mois = String(date.getMonth() + 1).padStart(2, '0');
+            const annee = date.getFullYear();
+            return `${jour}/${mois}/${annee}`;
+        }
+
+        function formatHeure(date) {
+            const heures = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${heures}h${minutes}`;
+        }
 
         function calculerOR(elementDeclencheur) {
             const indice = document.getElementById("indice").value;
@@ -312,39 +373,124 @@
             const joursComplets = Math.floor(heures / 24);
             const heuresRestantes = heures % 24;
             const fractions = Math.floor(heuresRestantes / 8);
+            const heuresFinales = Math.floor(heuresRestantes % 8);
+            const minutesFinales = Math.round(((heuresRestantes % 8) - heuresFinales) * 60);
 
             const montantJours = joursComplets * tauxJournalier;
             const montantFractions = fractions * tauxFraction;
             const montantTotal = montantJours + montantFractions;
 
-            const heuresFinales = heuresRestantes % 8;
-            let dureeTexte = "";
+            // Calcul des jours de séjour
+            const dateDebut = new Date(departDateTime);
+            dateDebut.setDate(dateDebut.getDate() + 1);
+            const dateFin2 = new Date(finDateTime);
+            dateFin2.setDate(dateFin2.getDate() - 1);
+            
+            const joursDeSejourTotal = Math.max(0, Math.floor((dateFin2 - dateDebut) / (1000 * 60 * 60 * 24)) + 1);
+
+            // Construction du résultat
+            let html = '<div class="resultat_titre">📋 Décompte d\'indemnité</div>';
+            html += '<div class="resultat_contenu">';
+            html += '<div class="resultat_ligne">';
+            html += `Départ: ${formatDate(departDateTime)} à ${formatHeure(departDateTime)}`;
+            
+            // Calcul du temps jusqu'à minuit du jour de départ
+            const finJourDepart = new Date(departDateTime);
+            finJourDepart.setHours(23, 59, 59, 999);
+            const msJusquaMinuit = finJourDepart - departDateTime;
+            const heuresJusquaMinuit = msJusquaMinuit / (1000 * 60 * 60);
+            
+            const fractionsDepartPossibles = Math.floor(heuresJusquaMinuit / 8);
+            const heuresApresFractions = heuresJusquaMinuit - (fractionsDepartPossibles * 8);
+            const heuresEntieresDepart = Math.floor(heuresApresFractions);
+            const minutesDepart = Math.round((heuresApresFractions - heuresEntieresDepart) * 60);
+            
+            html += ` => `;
+            if (heuresEntieresDepart > 0) {
+                html += `${heuresEntieresDepart}h`;
+            }
+            if (fractionsDepartPossibles > 0) {
+                if (heuresEntieresDepart > 0) html += ' + ';
+                html += `${fractionsDepartPossibles}fraction${fractionsDepartPossibles > 1 ? 's' : ''}`;
+            }
+            if (minutesDepart > 0) {
+                html += ` + ${String(minutesDepart).padStart(2, '0')}min`;
+            }
+            html += '</div>';
+
+            // Ligne de séjour
+            if (joursDeSejourTotal > 0) {
+                html += `<div class="resultat_ligne">séjour du ${formatDate(dateDebut)} au ${formatDate(dateFin2)}: ${joursDeSejourTotal} jour${joursDeSejourTotal > 1 ? 's' : ''}</div>`;
+            }
+
+            // Ligne de fin
+            html += '<div class="resultat_ligne">';
+            html += `fin déplacement: ${formatDate(finDateTime)} à ${formatHeure(finDateTime)}`;
+            
+            const heuresFinCalcul = finDateTime.getHours();
+            const minutesFinCalcul = finDateTime.getMinutes();
+            const fractionsFinPossibles = Math.floor(heuresFinCalcul / 8);
+            const heuresFinRestantes = heuresFinCalcul % 8;
+            
+            html += ` => `;
+            if (fractionsFinPossibles > 0) {
+                html += `${fractionsFinPossibles}fraction${fractionsFinPossibles > 1 ? 's' : ''} + `;
+            }
+            html += `${heuresFinRestantes}h`;
+            if (minutesFinCalcul > 0) {
+                html += ` + ${String(minutesFinCalcul).padStart(2, '0')}min`;
+            }
+            html += '</div>';
+
+            // Séparateur
+            html += '<div class="resultat_ligne separator">------------------------------</div>';
+
+            // Total
+            let totalTexte = '';
             if (joursComplets > 0) {
-                dureeTexte += `${joursComplets} jour${joursComplets > 1 ? 's' : ''}`;
+                totalTexte += `${joursComplets}jour${joursComplets > 1 ? 's' : ''}`;
             }
             if (fractions > 0) {
-                if (dureeTexte) dureeTexte += ", ";
-                dureeTexte += `${fractions} fraction${fractions > 1 ? 's' : ''} (${fractions * 8}h)`;
+                if (totalTexte) totalTexte += ' + ';
+                totalTexte += `${fractions}fraction${fractions > 1 ? 's' : ''}`;
             }
             if (heuresFinales > 0) {
-                if (dureeTexte) dureeTexte += " et ";
-                dureeTexte += `${Math.floor(heuresFinales)}h`;
+                if (totalTexte) totalTexte += ' + ';
+                totalTexte += `${heuresFinales}h`;
+            }
+            if (minutesFinales > 0) {
+                if (totalTexte) totalTexte += ' + ';
+                totalTexte += `${String(minutesFinales).padStart(2, '0')}min`;
             }
 
-            let detailCalcul = "";
+            html += `<div class="resultat_ligne indent">${totalTexte}</div>`;
+
+            // Calcul détaillé
+            let calculDetail = '';
             if (joursComplets > 0) {
-                detailCalcul += `${joursComplets} jour${joursComplets > 1 ? 's' : ''} × ${tauxJournalier.toLocaleString('fr-FR')} Ar`;
+                calculDetail += `${joursComplets}jour${joursComplets > 1 ? 's' : ''} * ${tauxJournalier}`;
             }
             if (fractions > 0) {
-                if (detailCalcul) detailCalcul += " + ";
-                detailCalcul += `${fractions} fraction${fractions > 1 ? 's' : ''} × ${tauxFraction.toLocaleString('fr-FR')} Ar`;
+                if (calculDetail) calculDetail += ' + ';
+                calculDetail += `${fractions}fraction${fractions > 1 ? 's' : ''} * ${tauxFraction}`;
             }
 
-            document.getElementById("duree").textContent = dureeTexte || `${Math.floor(heures)}h`;
-            document.getElementById("taux").textContent = detailCalcul;
-            document.getElementById("nbJours").textContent = `${joursComplets} jour${joursComplets > 1 ? 's' : ''} + ${fractions} fraction${fractions > 1 ? 's' : ''}`;
-            document.getElementById("montant").textContent = `${montantTotal.toLocaleString('fr-FR')} Ar`;
+            html += `<div class="resultat_ligne indent">=> ${calculDetail}</div>`;
 
+            // Séparateur final
+            html += '<div class="resultat_ligne separator">------------------------------</div>';
+
+            // Montant total
+            html += `<div class="resultat_ligne total indent">${montantTotal.toLocaleString('fr-FR')}</div>`;
+            html += '</div>'; // Fin resultat_contenu
+
+            // Bloc final avec animation
+            html += '<div class="resultat_final">';
+            html += '<div class="resultat_final_texte">💰 Vous empochez:</div>';
+            html += `<div class="resultat_final_montant">${montantTotal.toLocaleString('fr-FR')} Ariary</div>`;
+            html += '</div>';
+
+            resultatDiv.innerHTML = html;
             resultatDiv.classList.add("show");
         }
     </script>
